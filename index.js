@@ -379,9 +379,9 @@ app.get('/dashboard/summary', checkRole(['admin', 'analyst', 'master_admin']), (
     let totalIncome = 0;
     let totalExpenses = 0;
     const categoryTotals = {};
-    records = getActiveRecords(); // only consider non-deleted records for dashboard summary
+    const activeRecords = getActiveRecords(); // only consider non-deleted records for dashboard summary
 
-    records.forEach(r => {
+    activeRecords.forEach(r => {
 
         if (r.type === 'income') {
             totalIncome += r.amount;
@@ -403,7 +403,7 @@ app.get('/dashboard/summary', checkRole(['admin', 'analyst', 'master_admin']), (
         'totalExpenses': totalExpenses,
         'netBalance': netBalance,
         'categoryTotals': categoryTotals,
-        'recentRecords': records.slice(-5), // show the 5 most recent records for master admin and admin users, this is to provide them with a quick overview of recent activity in the system, while also keeping the dashboard summary concise and focused on key metrics
+        'recentRecords': activeRecords.slice(-5), // show the 5 most recent records for master admin and admin users, this is to provide them with a quick overview of recent activity in the system, while also keeping the dashboard summary concise and focused on key metrics
         'recentDeletedRecords': getDeletedRecords().slice(-5), // show the 5 most recent deleted records for master admin and admin users, this is to provide them with visibility into recent deletions in the system, which could be important for auditing and monitoring purposes, while also keeping the dashboard summary concise and focused on key metrics
         'recentRestoredRecords': getActiveRecords().filter(r => r.deletedAt !== null).slice(-5), // deleted at null means the record has never been deleted, so we filter active records to find those that have a deletedAt timestamp, which indicates they were deleted and then restored, showing the 5 most recent of these for master admin and admin users provides them with visibility into recent restorations in the system, which could be important for auditing and monitoring purposes, while also keeping the dashboard summary concise and focused on key metrics
         'recordCount': getActiveRecords().length, // show the total count of non-deleted records for master admin and admin users, this is to provide them with a quick overview of the total number of active records in the system, which could be important for capacity planning and monitoring purposes, while also keeping the dashboard summary concise and focused on key metrics
