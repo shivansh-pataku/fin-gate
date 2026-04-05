@@ -1,6 +1,6 @@
 <div align="center">
 
-# Finance Management System API
+# Finance Data Processing and Access Control Backend
 
 A lightweight Node.js/Express-based API for managing financial records and user accounts with role-based access control.
 
