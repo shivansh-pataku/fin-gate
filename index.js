@@ -6,40 +6,62 @@ app.use(express.json());
 
 
 
+// Categories and subcategories for records
+const CAT = Object.freeze({
+  E: { // expense categories
+    LABOUR: "LABOUR",
+    RAW_MATERIAL: "RAW_MATERIAL",
+    MAINTENANCE: "MAINTENANCE",
+    PRODUCTION: "PRODUCTION_COST",
+    TRAVEL: "EXPOSURE_VISIT"
+  },
+  I: { // income categories
+    SALES: "PRODUCT_SALES",
+    SERVICE: "SERVICE_FEES",
+    CONSULTING: "CONSULTING_FEES"
+  }
+});
 
-// Initialize records storage array
+// Initialize records storage array CAT.E.LABOUR, CAT.E.RAW_MATERIAL, CAT.E.MAINTENANCE, CAT.E.PRODUCTION, CAT.E.TRAVEL, CAT.I.SALES, CAT.I.SERVICE, CAT.I.CONSULTING
 const records = [
-    {"id":1,"amount":100,"type":"expense","category":"food","date":"2026-04-02","note":"lunch"},
-    {"id":2,"amount":200,"type":"expense","category":"books","date":"2026-04-02","note":"lunch"},
-    {"id":3,"amount":300,"type":"expense","category":"maintainance","date":"2026-04-02","note":"lunch"},
-    {"id":4,"amount":400,"type":"expense","category":"farms","date":"2026-04-02","note":"lunch"},
-    {"id":5,"amount":100,"type":"expense","category":"visits","date":"2026-04-02","note":"lunch"},
-    {"id":6,"amount":50000,"type":"earn","category":"job","date":"2026-04-02","note":"lunch"},
-    {"id":7,"amount":300,"type":"earn","category":"farms","date":"2026-04-02","note":"lunch"},
-    {"id":8,"amount":400,"type":"earn","category":"art","date":"2026-04-02","note":"lunch"}
+  { id: 1, amount: 850, type: "expense", category: CAT.E.LABOUR, date: "2026-04-01", note: "Daily wages for 2 workers,", isDeleted: false, deletedAt: null },
+  { id: 2, amount: 3200, type: "expense", category: CAT.E.RAW_MATERIAL, date: "2026-04-01", note: "Cement and sand purchase", isDeleted: false, deletedAt: null },
+  { id: 3, amount: 1200, type: "expense", category: CAT.E.MAINTENANCE, date: "2026-04-02", note: "Machine servicing and oil change", isDeleted: false, deletedAt: null },
+  { id: 4, amount: 5400, type: "expense", category: CAT.E.PRODUCTION, date: "2026-04-03", note: "Electricity and production overhead", isDeleted: false, deletedAt: null },
+  { id: 5, amount: 1500, type: "expense", category: CAT.E.TRAVEL, date: "2026-04-04", note: "Site visit transportation cost", isDeleted: false, deletedAt: null },
+  { id: 6, amount: 68000, type: "income", category: CAT.I.SALES, date: "2026-04-03", note: "Bulk product sale to local distributor", isDeleted: false, deletedAt: null },
+  { id: 7, amount: 4500, type: "income", category: CAT.I.SERVICE, date: "2026-04-04", note: "Installation and service charges", isDeleted: false, deletedAt: null },
+  { id: 8, amount: 8000, type: "income", category: CAT.I.CONSULTING, date: "2026-04-05", note: "Process optimization consulting fee", isDeleted: false, deletedAt: null }
 ]; // functional records only for testing purposes
 
 // Initialize users storage array 
 
 const users = [
-    {"id":1,"username":"viewer1","name":"viewer","role":"viewer","password":"1234","status":"inactive"},
-    {"id":2,"username":"viewer2","name":"viewer","role":"viewer","password":"1234","status":"active"},
-    {"id":3,"username":"viewer3","name":"viewer","role":"viewer","password":"1234","status":"active"},
-    {"id":4,"username":"admin1","name":"admin1","role":"admin","password":"1234","status":"inactive"},
-    {"id":5,"username":"admin2","name":"admin2","role":"admin","password":"1234","status":"active"},
-    {"id":6,"username":"admin3","name":"admin1","role":"admin","password":"1234","status":"active"},
-    {"id":7,"username":"analyst1","name":"analyst1","role":"analyst","password":"1234","status":"inactive"},
-    {"id":8,"username":"analyst2","name":"analyst2","role":"analyst","password":"1234","status":"active"},
-{"id":9,"username":"analyst3","name":"analyst3","role":"analyst","password":"1234","status":"active"},
-    {"id":11,"username":"new1","name":"new1","role":"viewer","password":"1234","status":"inactive"},
-    {"id":12,"username":"new11","name":"new11","role":"admin","password":"1234","status":"inactive"},
-    {"id":13,"username":"new111","name":"new111","role":"analyst","password":"1234","status":"inactive"},
-    {"id":14,"username":"new1111","name":"new1111","role":"analyst","password":"1234","status":"inactive"}
-]; // functional users only for testing purposes
+    {"id": 0, "username": "master", "name": "Master Administrator", "role": "master_admin", "password": "master", "status": "active"},
+    {"id": 1, "username": "viewer1", "name": "Priya Sharma", "role": "viewer", "password": "1234", "status": "active"},
+    {"id": 2, "username": "viewer2", "name": "Arjun Kumar", "role": "viewer", "password": "1234", "status": "active"},
+    {"id": 3, "username": "viewer3", "name": "Anjali Patel", "role": "viewer", "password": "1234", "status": "inactive"},
+    {"id": 4, "username": "admin1", "name": "Vikram Singh", "role": "admin", "password": "1234", "status": "active"},
+    {"id": 5, "username": "admin2", "name": "Neha Gupta", "role": "admin", "password": "1234", "status": "active"},
+    {"id": 6, "username": "admin3", "name": "Roshan", "role": "admin", "password": "1234", "status": "inactive"},
+    {"id": 7, "username": "analyst1", "name": "Sneha", "role": "analyst", "password": "1234", "status": "active"},
+    {"id": 8, "username": "analyst2", "name": "Arun", "role": "analyst", "password": "1234", "status": "active"},
+    {"id": 9, "username": "analyst3", "name": "Divya", "role": "analyst", "password": "1234", "status": "inactive"},
+    {"id": 10, "username": "viewer_pending", "name": "Rajesh Verma", "role": "viewer", "password": "1234", "status": "inactive"},
+    {"id": 11, "username": "analyst_pending", "name": "Meera", "role": "analyst", "password": "1234", "status": "inactive"}
+]; // functional users for testing - includes both active and inactive (pending approval) users
+
+
+
+const getActiveRecords = () => records.filter(r => !r.isDeleted);
+const getDeletedRecords = () => records.filter(r => r.isDeleted);
+
+
+
 
 const master_admins = [{ id:0,username:'master', name:'master', password: 'master', role: 'master_admin', status: 'active'},]; // pre-create master_admin user with all access, this user cannot be created by anyone else, only system admin can create this user, this user has all access to records and user management, can create other admins, analysts, and viewers; also inaccessible to any user except master admin even that for update/modification purpose only
 
-users.push(...master_admins); // add master admins to users array for authentication, so that master always available for authentication and can also not be viewed, deleted or modified in any way - ... three dots is used to spread the master_admins array into the users array
+//users.push(...master_admins); // add master admins to users array for authentication, so that master always available for authentication and can also not be viewed, deleted or modified in any way - ... three dots is used to spread the master_admins array into the users array
 
 
 const userRoles = ['admin', 'analyst', 'viewer']; // define user roles; another role MASTER ADMIN is not allowed to be created by users, only by system admin, master admin has all access to records and user management, can create other admins, analysts, and viewers
@@ -90,26 +112,34 @@ app.put('/users/:id/approve', checkRole(['admin', 'master_admin']), (req, res) =
     //     return res.status(403).send('Only master admin can approve admin users');
     // }
 
+    if (candidate.role === 'admin' && req.loggingUser.role !== 'master_admin') { // only master admin can approve admin users
+        return res.status(403).send('Only master admin can approve admin users');
+    }
+
 
     if (!candidate){
         return res.status(404).send('User not found');
     }
 
-    if(candidate.status === 'active') {
-        return res.status(400).send('User already active')
+    if(candidate.status === 'inactive') {
+            candidate.status = 'active';
+
     }
 
-    candidate.status = 'active';
+    if(candidate.status === 'active') {
+        candidate.status = 'inactive';
+    }
+
 
     res.json({
-        message: 'User approved successfully',
+        message: 'User access status updated successfully',
         candidate
     });
 });
     
 
 // User registration route
-app.post('/users', (req, res) => {
+app.post('/users', checkRole(['admin', 'master_admin']), (req, res) => {
 
 
     let userStatus; // declare userStatus variable
@@ -130,17 +160,17 @@ app.post('/users', (req, res) => {
         }
 
         if(userRoles.includes(role)){ 
-            userStatus = 'inactive'; // pending approval from admin, complete access to records once approved
+            userStatus = 'active'; // pending approval from admin, complete access to records once approved
         }else{
             return res.status(400).send('Invalid role ! Role must be either analyst, viewer, or admin');
         }
 
     const newUser = {
-        id: users.length + 1,
+        id: Date.now(), // generate new user id based on the current timestamp, this is a simple way to generate unique ids for demonstration purposes, in a real application we would use a more robust method of generating unique ids such as UUIDs
         username,
         name,
         role,
-        password, // include password in the new user object
+        password, // password is stored in plain text for demonstration purposes, in a real application we would hash the password before storing it for security 
         status: userStatus
     };
 
@@ -158,25 +188,38 @@ app.post('/users', (req, res) => {
 /////////--------- record management routes (create, update, delete) - only analyst, admin, and master admin can manage records, viewers can only view records
 
 // Record creation with json body
-app.post('/records', checkRole(['analyst', 'admin', 'master_admin']), (req, res) => {
+app.post('/records', checkRole(['admin', 'master_admin']), (req, res) => {
 
     if (!req.body) {
         return res.status(400).send('Invalid JSON body');
     }
 
-    const { amount, type, category, date, note } = req.body;
+    let { amount, type, category, date, note } = req.body;
 
-    if (!amount || !type) {
-        return res.status(400).send('Amount and type are required');
+    if (!amount || !category) {
+        return res.status(400).send('Amount and category are required');
     }
 
+    // Validate category and set type automatically
+    if (Object.values(CAT.E).includes(category)) {
+        type = 'expense';
+    } else if (Object.values(CAT.I).includes(category)) {
+        type = 'income';
+    } else {
+        return res.status(400).send('Undefined category');
+    }
+
+    const NewID = records.length > 0 ? records[records.length - 1].id + 1 : 1;
+
     const newRecord = {
-        id: records.length + 1,
+        id: NewID,
         amount,
         type,
         category,
-        date,
-        note
+        date : date || new Date().toISOString().split('T')[0], // split T removes time part from ISO string, and [0] means we only want the date part only - if date is not provided, use current date in YYYY-MM-DD format
+        note: note || '', // if note is not provided, use empty string
+        isDeleted: false, // flag to indicate if the record is deleted, this is used to implement soft delete functionality, when a record is deleted, we set this flag to true instead of actually removing the record from the array, this allows us to keep a history of deleted records and also allows us to restore deleted records if needed
+        deletedAt: null // timestamp to store when the record was deleted, this is used in conjunction with the isDeleted flag to implement soft delete functionality, when a record is deleted, we set this timestamp to the current date and time, this allows us to keep track of when records were deleted and also allows us to implement features such as showing recently deleted records or restoring records that were deleted within a certain time frame
     };
 
     records.push(newRecord);
@@ -188,9 +231,10 @@ app.post('/records', checkRole(['analyst', 'admin', 'master_admin']), (req, res)
 });
 
 // Record update route by id
-app.put('/records/:id', checkRole(['analyst', 'admin', 'master_admin']), (req, res) =>{
+app.put('/records/:id', checkRole(['admin', 'master_admin']), (req, res) =>{
     const id = parseInt(req.params.id);
-    const record = records.find (r => r.id === id);
+    const record = records.find (r => r.id === id && !r.isDeleted); // find the record by id and also check if it's not deleted, this is to prevent updating a record that has been marked as deleted, since deleted records are not actually removed from the array but are just marked as deleted using the isDeleted flag, we need to check this flag when updating records to ensure that we don't accidentally update a record that has been deleted
+
 
     if (!record) {
         return res.status(404).send('Record not found');
@@ -213,23 +257,45 @@ app.put('/records/:id', checkRole(['analyst', 'admin', 'master_admin']), (req, r
 });
 
 // Record delete route by id
-app.delete('/records/:id', checkRole(['admin', 'master_admin', 'analyst']), (req, res) => {
+app.delete('/records/:id', checkRole(['admin', 'master_admin']), (req, res) => {
 
-    const id = parseInt(req.params.id);
+    const record = records.find(r => r.id === parseInt(req.params.id) && !r.isDeleted);
 
-    const index = records.findIndex(r => r.id === id);
-
-    if (index === -1) {
+    if (!record) {
         return res.status(404).send('Record not found');
     }
 
-    const deletedRecord = records.splice(index, 1); // remove the record from the array where index is found up to 1 record
+    record.isDeleted = true; 
+    record.deletedAt = new Date().toISOString(); 
+
     return res.status(200).json({
         message: 'Record deleted successfully',
-        deletedRecord
+        'deletedRecord' : record
     });
 });
 
+// Restore deleted record by id
+app.put('/records/:id/restore', checkRole(['admin', 'master_admin']), (req, res) => {
+    const record = records.find(r => r.id === parseInt(req.params.id));
+    
+    if (!record) return res.status(404).send('Record not found');
+    if (!record.isDeleted) return res.status(400).send('Record is not deleted');
+    
+    record.isDeleted = false;
+    record.deletedAt = null;
+    
+    res.json({ message: 'Record restored successfully', record });
+});
+
+
+app.delete('/records/:id/purge', checkRole(['admin', 'master_admin']), (req, res) => {
+    const recordIndex = records.findIndex(r => r.id === parseInt(req.params.id) && r.isDeleted); // only allow purging of records that are marked as deleted, this is to prevent accidental purging of active records, since purging is a permanent action that cannot be undone, we want to ensure that only records that have been marked as deleted can be purged, this adds an extra layer of safety to the record management process
+    if (recordIndex === -1) {
+        return res.status(404).send('Record not found deletable');
+    }
+    records.splice(recordIndex, 1);
+    res.json({ message: 'Record purged successfully' });
+});
 
 ///////////////////////////////////// browser routes ////////////////////////////////////////////
 
@@ -237,23 +303,63 @@ app.delete('/records/:id', checkRole(['admin', 'master_admin', 'analyst']), (req
 // Home route
 app.get('/', (req, res) => {
     res.send(`
-        <h1>Welcome to the Finance Management System API</h1>
-        <p>Use the following endpoints to manage records and users:</p>
-        <ul>
-            <li>POST /users - Register a new user (requires username, name, role, and password in the request body)</li>
-            <li>PUT /users/:id/approve - Approve a user by ID (admin or master_admin only)</li>
-            <li>POST /records - Create a new record (analyst, admin, or master_admin only)</li>
-            <li>PUT /records/:id - Update a record by ID (analyst, admin, or master_admin only)</li>
-            <li>DELETE /records/:id - Delete a record by ID (analyst, admin, or master_admin only)</li>
-            <li>GET /records - Get all records (admin, master_admin, analyst, or viewer only)</li>
-            <li>GET /users - Get all users (admin or master_admin only)</li>
-        </ul>
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Finance Management System API</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                h1 { color: #333; }
+                ul { line-height: 1.8; }
+                .user-endpoints { color: #0066cc; }
+                .record-endpoints { color: #009900; }
+                .dashboard-endpoints { color: #ff6600; }
+            </style>
+        </head>
+        <body>
+            <h1>Welcome to the Finance Management System API</h1>
+            <p>Use the following endpoints to manage records and users:</p>
+            
+            <h2 class="user-endpoints">User Management</h2>
+            <ul>
+                <li><strong>POST /users</strong> - Register a new user (requires username, name, role, and password in the request body) [Admin or Master Admin only]</li>
+                <li><strong>PUT /users/:id/approve</strong> - Toggle user approval status by ID [Admin or Master Admin only]</li>
+                <li><strong>GET /users</strong> - Get all users [Admin or Master Admin only]</li>
+            </ul>
+
+            <h2 class="record-endpoints">Record Management</h2>
+            <ul>
+                <li><strong>POST /records</strong> - Create a new record (requires amount, category; optional: type, date, note) [Admin or Master Admin only]</li>
+                <li><strong>PUT /records/:id</strong> - Update a record by ID [Admin or Master Admin only]</li>
+                <li><strong>GET /records</strong> - Get all records (viewers/analysts see active only; admins see both active and deleted) [Admin, Master Admin, Analyst, or Viewer only]</li>
+                <li><strong>DELETE /records/:id</strong> - Soft delete a record by ID (marks as deleted, data preserved) [Admin or Master Admin only]</li>
+                <li><strong>PUT /records/:id/restore</strong> - Restore a deleted record by ID [Admin or Master Admin only]</li>
+                <li><strong>DELETE /records/:id/purge</strong> - Permanently delete a record (only for soft-deleted records) [Admin or Master Admin only]</li>
+            </ul>
+
+            <h2 class="dashboard-endpoints">Dashboard & Analytics</h2>
+            <ul>
+                <li><strong>GET /dashboard/summary</strong> - Get financial summary (income, expenses, balance, category totals) [Admin, Analyst, or Master Admin only]</li>
+            </ul>
+        </body>
+        </html>
     `);
 });
 
 // Records route
 app.get('/records', checkRole(['admin', 'master_admin', 'analyst', 'viewer']), (req, res) => {
-    res.json(records);
+
+    if (req.loggingUser.role === 'viewer' || req.loggingUser.role === 'analyst') { // if the logging user is a viewer or analyst, they can only see non-deleted records, this is to prevent viewers from seeing deleted records which could be sensitive or irrelevant to them, and also to keep the interface clean for viewers who are only interested in active records
+        const activeRecords = getActiveRecords();
+
+        return res.json(activeRecords);
+    }
+
+     return res.json({        
+        'activeRecords' : getActiveRecords(),
+        'deletedRecords' : getDeletedRecords() 
+    });
+
 });
 
 // Users route
@@ -267,8 +373,58 @@ app.get('/users', checkRole(['admin', 'master_admin']), (req, res) => {
     res.json(users);
 });
 
+
+// dashboard summary
+app.get('/dashboard/summary', checkRole(['admin', 'analyst', 'master_admin']), (req, res) => {
+    let totalIncome = 0;
+    let totalExpenses = 0;
+    const categoryTotals = {};
+    records = getActiveRecords(); // only consider non-deleted records for dashboard summary
+
+    records.forEach(r => {
+
+        if (r.type === 'income') {
+            totalIncome += r.amount;
+        } else if (r.type === 'expense') {
+            totalExpenses += r.amount;
+        }
+
+        if (!categoryTotals[r.category]) {
+            categoryTotals[r.category] = 0;
+        }
+        categoryTotals[r.category] += r.amount;
+    });
+
+    const netBalance = totalIncome - totalExpenses;
+
+        if (req.loggingUser.role === 'master_admin' || req.loggingUser.role === 'admin') {
+        return res.json({
+        'totalIncome': totalIncome,
+        'totalExpenses': totalExpenses,
+        'netBalance': netBalance,
+        'categoryTotals': categoryTotals,
+        'recentRecords': records.slice(-5), // show the 5 most recent records for master admin and admin users, this is to provide them with a quick overview of recent activity in the system, while also keeping the dashboard summary concise and focused on key metrics
+        'recentDeletedRecords': getDeletedRecords().slice(-5), // show the 5 most recent deleted records for master admin and admin users, this is to provide them with visibility into recent deletions in the system, which could be important for auditing and monitoring purposes, while also keeping the dashboard summary concise and focused on key metrics
+        'recentRestoredRecords': getActiveRecords().filter(r => r.deletedAt !== null).slice(-5), // deleted at null means the record has never been deleted, so we filter active records to find those that have a deletedAt timestamp, which indicates they were deleted and then restored, showing the 5 most recent of these for master admin and admin users provides them with visibility into recent restorations in the system, which could be important for auditing and monitoring purposes, while also keeping the dashboard summary concise and focused on key metrics
+        'recordCount': getActiveRecords().length, // show the total count of non-deleted records for master admin and admin users, this is to provide them with a quick overview of the total number of active records in the system, which could be important for capacity planning and monitoring purposes, while also keeping the dashboard summary concise and focused on key metrics
+        'userCount': users.length, // show the total count of users for master admin and admin users, this is to provide them with a quick overview of the total number of users in the system, which could be important for capacity planning and monitoring purposes, while also keeping the dashboard summary concise and focused on key metrics
+        'recentUsers': users.slice(-5) // show the 5 most recent users for master admin and admin users, this is to provide them with visibility into recent user registrations in the system, which could be important for auditing and monitoring purposes, while also keeping the dashboard summary concise and focused on key metrics
+        })
+    }
+
+        return res.json({
+            'totalIncome': totalIncome,
+            'totalExpenses': totalExpenses,
+            'netBalance': netBalance,
+            'categoryTotals': categoryTotals
+        });
+
+
+});
+
 // start server
 app.listen(3000, () => {
     console.log('Server running on port 3000');
+
 });
 
