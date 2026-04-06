@@ -4,6 +4,12 @@ const app = express();
 // Middleware
 app.use(express.json());
 
+// Swagger setup for API documentation
+const { swaggerUi, specs } = require('./swagger');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+
+
+
 //fUNCTIONALITY IMPORTS
 // Importing Routes for records, users, and dashboard, to utilize the functionality defined in those route files
 const userRoutes = require('./routes/users');
@@ -119,5 +125,6 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`Visit http://localhost:${PORT}/ for API documentation`);
+  console.log(`📚 Swagger API Docs: http://localhost:${PORT}/api-docs`);
+  console.log(`📖 API Documentation: http://localhost:${PORT}/`);
 });

@@ -33,12 +33,12 @@ A lightweight Node.js/Express-based API for managing financial records and user 
 ### Installation
 
 1. Clone or download the project
-2. Install dependencies (including Express):
+2. Install dependencies (including Express and Swagger):
 ```bash
 npm install
 ```
 
-This will install all required packages including Express v5.2.1
+This will install all required packages including Express v5.2.1, swagger-jsdoc, and swagger-ui-express
 
 ### Running the Server
 
@@ -47,6 +47,17 @@ node index.js
 ```
 
 The server will start on `http://localhost:3000`
+
+### Access API Documentation
+
+- **📚 Interactive Swagger UI**: `http://localhost:3000/api-docs` ⭐ (Recommended)
+  - Test all 21 endpoints directly in your browser
+  - Interactive request/response testing
+  - Built-in HTTP Basic Authentication
+  - See live examples and schema validation
+
+- **📖 Homepage Documentation**: `http://localhost:3000/`
+  - Quick reference guide
 
 ### Verify Installation
 
@@ -59,7 +70,51 @@ curl http://localhost:3000/
 
 ---
 
+## 🛠️ Using Swagger UI
+
+### Step 1: Open Swagger UI
+```
+http://localhost:3000/api-docs
+```
+
+### Step 2: Authorize (Click "Authorize" Button)
+Add your credentials:
+- **Username:** `admin2`
+- **Password:** `1234`
+
+Or use any of these test accounts:
+- Viewer: `viewer1` / `1234`
+- Analyst: `analyst1` / `1234`
+- Master Admin: `master` / `master`
+
+### Step 3: Test Endpoints
+1. Click on any endpoint (Users, Records, Dashboard)
+2. Click **"Try it out"**
+3. Fill in any required parameters
+4. Click **"Execute"**
+5. See the response below
+
+### Alternative: Manual Header Authorization
+If Authorize doesn't work, add this header manually:
+```
+Authorization: Basic YWRtaW4yOjEyMzQ=
+```
+(This is base64 encoded: admin2:1234)
+
+---
+
 ## 📡 API Documentation
+
+### 📚 Swagger UI (Interactive API Reference)
+
+The API comes with **interactive Swagger UI documentation** that allows you to:
+- ✅ View all 21 endpoints organized by category (Users, Records, Dashboard)
+- ✅ Test endpoints directly in your browser
+- ✅ See request/response schemas
+- ✅ Try different authentication credentials
+- ✅ View live code examples (cURL, Python, JavaScript, etc.)
+
+**Access it at:** `http://localhost:3000/api-docs`
 
 ### Base URL
 ```
@@ -68,11 +123,56 @@ http://localhost:3000
 
 ### 🔐 Authentication
 
-All endpoints (except the home route) require HTTP Basic Authentication via headers:
+All endpoints (except the home route and Swagger docs) require HTTP Basic Authentication via headers:
 ```
 username: <username>
 password: <password>
 ```
+
+Supported authentication methods:
+1. **Swagger UI Authorization** - Click "Authorize" button and enter credentials
+2. **HTTP Basic Auth Header** - `Authorization: Basic <base64(username:password)>`
+3. **Custom Headers** - `username` and `password` headers
+
+---
+
+## 📋 Complete API Endpoints Overview
+
+**Total Endpoints: 21** (All tested and documented in Swagger UI)
+
+### 👤 User Management (7 endpoints)
+| Method | Endpoint | Description | Access |
+|--------|----------|-------------|--------|
+| POST | `/users` | Register new user | admin, master_admin |
+| GET | `/users` | Get all users | admin, master_admin |
+| GET | `/users/:id` | Get specific user | admin, master_admin |
+| PUT | `/users/:id/approve` | Toggle user status | admin, master_admin |
+| GET | `/users/role/:role` | Filter users by role | admin, master_admin |
+| GET | `/users/status/active` | Get active users | admin, master_admin |
+| GET | `/users/status/inactive` | Get inactive users | admin, master_admin |
+
+### 📝 Record Management (7 endpoints)
+| Method | Endpoint | Description | Access |
+|--------|----------|-------------|--------|
+| POST | `/records` | Create record | admin, master_admin |
+| GET | `/records` | Get all records | analyst, admin, master_admin |
+| PUT | `/records/:id` | Update record | admin, master_admin |
+| DELETE | `/records/:id` | Soft delete record | admin, master_admin |
+| PUT | `/records/:id/restore` | Restore deleted record | admin, master_admin |
+| DELETE | `/records/:id/purge` | Permanently delete | admin, master_admin |
+
+### 📊 Dashboard & Analytics (7 endpoints)
+| Method | Endpoint | Description | Access |
+|--------|----------|-------------|--------|
+| GET | `/dashboard/summary` | Complete summary | All roles |
+| GET | `/dashboard/totals` | Income/expense totals | All roles |
+| GET | `/dashboard/categories` | Category breakdown | All roles |
+| GET | `/dashboard/monthly` | Monthly trends | All roles |
+| GET | `/dashboard/recent-activity` | Recent transactions | All roles |
+| GET | `/dashboard/expense-breakdown` | Expense by category | All roles |
+| GET | `/dashboard/income-breakdown` | Income by category | All roles |
+
+**👉 View all endpoints with examples in Swagger UI** at `http://localhost:3000/api-docs`
 
 ---
 
@@ -579,4 +679,4 @@ Any authenticated user → Access dashboard → View analytics
 
 ---
 
-**Built for learning and demonstration purposes.** ✨
+

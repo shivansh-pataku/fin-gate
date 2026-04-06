@@ -3,14 +3,29 @@ const {users, userRoles} = require('../data/mockData');
 // role middleware to check if user has required role to access certain routes
 const checkRole = (allowedRoles) => {
     return (req, res, next) => {
-        const { username, password } = req.headers;
+        let username, password;
+
+        // Check for HTTP Basic Authentication (Authorization header)
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith('Basic ')) {
+            // Decode Basic Auth: "Basic <base64(username:password)>"
+            const base64Credentials = authHeader.slice(6); // Remove "Basic " prefix
+            const credentials = Buffer.from(base64Credentials, 'base64').toString('utf-8');
+            const [user, pass] = credentials.split(':');
+            username = user;
+            password = pass;
+        } else {
+            // Fall back to custom headers (username and password)
+            username = req.headers.username;
+            password = req.headers.password;
+        }
 
         if (!username || !password) {
             return res.status(400).send('Username and password headers are required');
         }
 
         // Check if user exists with correct credentials
-        const loggingUser = users.find(u => u.username === username && u.password === password); // find the user in the users array with matching username and password from the request headers, this is a simple authentication mechanism for demonstration purposes, in a real application we would use a more secure method of authentication such as JWT or sessions
+        const loggingUser = users.find(u => u.username === username && u.password === password); /// find the user in the users array with matching username and password from the request headers, this is a simple authentication mechanism for demonstration purposes, in a real application we would use a more secure method of authentication such as JWT or sessions
         if (!loggingUser) {
             return res.status(401).send('Invalid username or password');
         }
